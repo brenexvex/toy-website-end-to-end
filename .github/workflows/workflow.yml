@@ -37,17 +37,17 @@ jobs:
       reviewApiKey: ${{ secrets.REVIEW_API_KEY_TEST }}
       sqlServerAdministratorLoginPassword: ${{ secrets.SQL_SERVER_ADMINISTRATOR_LOGIN_PASSWORD_TEST }}
 
-# Deploy to the production environment.
- deploy-production:
-  uses: ./.github/workflows/deploy.yml
-  needs:
-  - lint
-  - build
-  - deploy-test
-  with:
-    environmentType: Production
-    resourceGroupName: ToyWebsiteProduction
-    reviewApiUrl: https://api.contoso.com/reviews
+  # Deploy to the production environment.
+  deploy-production:
+    uses: ./.github/workflows/deploy.yml
+    needs:
+    - lint
+    - build
+    - deploy-test
+    with:
+  environmentType: Production
+  resourceGroupName: ToyWebsiteProduction
+  reviewApiUrl: https://api.contoso.com/reviews
   secrets:
     AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_PRODUCTION }}
     AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
