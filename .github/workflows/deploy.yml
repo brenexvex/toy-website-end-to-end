@@ -76,7 +76,7 @@ jobs:
       appServiceAppHostName: ${{ steps.deploy.outputs.appServiceAppHostName }}
       storageAccountName: ${{ steps.deploy.outputs.storageAccountName }}
       storageAccountImagesBlobContainerName: ${{ steps.deploy.outputs.storageAccountImagesBlobContainerName }}
-      sqlServerServerFullyQualifiedDomainName: ${{ steps.deploy.outputs.sqlServerFullyQualifiedDomainName }}
+      sqlServerFullyQualifiedDomainName: ${{ steps.deploy.outputs.sqlServerFullyQualifiedDomainName }}
       sqlDatabaseName: ${{ steps.deploy.outputs.sqlDatabaseName }}
     steps:
     - uses: actions/checkout@v3
@@ -134,12 +134,12 @@ jobs:
     - uses: azure/sql-action@v1.2
       name: Deploy DACPAC to database
       with:
-        server-name: ${{ needs.deploy.outputs.sqlServerServerFullyQualifiedDomainName }}
+        server-name: ${{ needs.deploy.outputs.sqlServerFullyQualifiedDomainName }}
         connection-string: ${{ format('Server={0};Initial Catalog={1};User Id={2};Password={3};', needs.deploy.outputs.sqlServerFullyQualifiedDomainName, needs.deploy.outputs.sqlDatabaseName, inputs.sqlServerAdministratorLogin, secrets.sqlServerAdministratorLoginPassword) }}
         dacpac-package: database/ToyCompany.Database.dacpac
 
   seed-database:
-    needs: 
+    needs:
     - deploy
     - deploy-database
     environment: ${{ inputs.environmentType }}
@@ -156,10 +156,10 @@ jobs:
       uses: azure/sql-action@v1.2
       name: Add test data to database
       with:
-        server-name: ${{ needs.deploy.outputs.sqlServerServerFullyQualifiedDomainName }}
+        server-name: ${{ needs.deploy.outputs.sqlServerFullyQualifiedDomainName }}
         connection-string: ${{ format('Server={0};Initial Catalog={1};User Id={2};Password={3};', needs.deploy.outputs.sqlServerFullyQualifiedDomainName, needs.deploy.outputs.sqlDatabaseName, inputs.sqlServerAdministratorLogin, secrets.sqlServerAdministratorLoginPassword) }}
         sql-file: 'deploy/sample-data/Toys.sql'
-        
+
   seed-storage-account:
     needs: deploy
     environment: ${{ inputs.environmentType }}
@@ -176,22 +176,15 @@ jobs:
       uses: azure/CLI@v1
       name: Upload sample images
       with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    - if: inputs.environmentType != 'Production'
-      uses: azure/CLI@v1
-      name: Upload sample images
-      with:
         inlineScript: |
-           az storage blob upload-batch \
-             --account-name ${{ needs.deploy.outputs.storageAccountName }} \
-             --destination ${{ needs.deploy.outputs.storageAccountImagesBlobContainerName }} \
-             --source 'deploy/sample-data/toyimages'
+            az storage blob upload-batch \
+              --account-name ${{ needs.deploy.outputs.storageAccountName }} \
+              --destination ${{ needs.deploy.outputs.storageAccountImagesBlobContainerName }} \
+              --source 'deploy/sample-data/toyimages'
 
   smoke-test:
     runs-on: ubuntu-latest
-    needs: 
+    needs:
     - deploy
     - deploy-website
     - deploy-database
