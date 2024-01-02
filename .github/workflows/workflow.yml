@@ -45,9 +45,9 @@ jobs:
     - build
     - deploy-test
     with:
-  environmentType: Production
-  resourceGroupName: ToyWebsiteProduction
-  reviewApiUrl: https://api.contoso.com/reviews
+    environmentType: Production
+    resourceGroupName: ToyWebsiteProduction
+    reviewApiUrl: https://api.contoso.com/reviews
   secrets:
     AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_PRODUCTION }}
     AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
