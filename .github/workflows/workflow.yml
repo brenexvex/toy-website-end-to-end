@@ -38,7 +38,7 @@ jobs:
       sqlServerAdministratorLoginPassword: ${{ secrets.SQL_SERVER_ADMINISTRATOR_LOGIN_PASSWORD_TEST }}
 
 # Deploy to the production environment.
-deploy-production:
+ deploy-production:
   uses: ./.github/workflows/deploy.yml
   needs:
   - lint
